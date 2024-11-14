@@ -1,0 +1,23 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar Docker para acesso ao Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Construir a imagem Docker
+        run: docker build -t kauannyfelix/api-rest-ci-cd-simples:${{ github.sha }} .
+
+      - name: Empurrar a imagem para o Docker Hub
+        run: docker push kauannyfelix/api-rest-ci-cd-simples:${{ github.sha }}
